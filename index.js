@@ -1,4 +1,6 @@
-const ironhide = require('bindings')('addon');
+const addon = require('bindings')('addon');
 
-const doc = new ironhide.Document(10);
-console.log(doc.value);
+const transformer = new addon.Transformer();
+console.log(transformer);
+transformer.loadStylesheet('dataset/otherxslt.xsl');
+console.log(transformer.apply('dataset/draft.xml'));
