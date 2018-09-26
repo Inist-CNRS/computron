@@ -15,6 +15,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".node")
 
 # Include N-API wrappers
 target_include_directories(${PROJECT_NAME} PRIVATE "/usr/include/node")
+target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/node_modules/node-addon-api")
 
 # Include Libxml2 and Libxslt
 target_include_directories(${PROJECT_NAME} PRIVATE ${LIBXML2_INCLUDE_DIR} ${LIBXSLT_INCLUDE_DIR})

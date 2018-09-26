@@ -1,7 +1,8 @@
+#include <napi.h>
 #include "transformer.h"
 
-napi_value Init(napi_env env, napi_value exports) {
+Napi::Object InitAll(Napi::Env env, Napi::Object exports) {
   return Transformer::Init(env, exports);
 }
 
-NAPI_MODULE(NODE_GYP_MODULE_NAME, Init)
+NODE_API_MODULE(addon, InitAll)

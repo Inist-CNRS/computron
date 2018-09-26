@@ -1,27 +1,23 @@
 #if !defined(TRANSFORMER_H)
 #define TRANSFORMER_H
 
-#include <node_api.h>
+#include <napi.h>
 #include <libxslt/xsltInternals.h>
-#include <string>
 
-class Transformer {
+class Transformer : public Napi::ObjectWrap<Transformer> {
 public:
-  static napi_value Init(napi_env env, napi_value exports);
-  static void Destructor(napi_env env, void* nativeObject, void* finalize_hint);
-
-private:
-  explicit Transformer();
+  static Napi::Object Init(Napi::Env env, Napi::Object exports);
+  Transformer(const Napi::CallbackInfo& info);
   ~Transformer();
 
-  static napi_value New(napi_env env, napi_callback_info info);
-  static napi_value loadStylesheet(napi_env env, napi_callback_info info);
-  static napi_value apply(napi_env env, napi_callback_info info);
-  static napi_ref constructor;
+private:
+  static Napi::FunctionReference constructor;
+
+  Napi::Value loadStylesheet(const Napi::CallbackInfo& info);
+  Napi::Value apply(const Napi::CallbackInfo& info);
+  
   xsltStylesheetPtr stylesheetPtr;
   const char *params[8] = {""};
-  napi_env env_;
-  napi_ref wrapper_;
 };
 
 
