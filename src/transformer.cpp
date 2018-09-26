@@ -118,11 +118,14 @@ napi_value Transformer::apply(napi_env env, napi_callback_info info) {
   napi_status status;
   xmlDocPtr inputXmlDocument, outputXmlDocument;
 
-  size_t argc = 1;
-  napi_value value;
+  size_t argc = 2;
+  napi_value args[2];
   napi_value jsthis;
-  status = napi_get_cb_info(env, info, &argc, &value, &jsthis, nullptr);
+  status = napi_get_cb_info(env, info, &argc, args, &jsthis, nullptr);
   assert(status == napi_ok);
+
+  napi_value value = args[0];
+  napi_value cb = args[1];
 
   Transformer *obj;
   status = napi_unwrap(env, jsthis, reinterpret_cast<void **>(&obj));
@@ -149,14 +152,22 @@ napi_value Transformer::apply(napi_env env, napi_callback_info info) {
   int stringResultLength;
   xsltSaveResultToString(&stringResult, &stringResultLength, outputXmlDocument, obj->stylesheetPtr);
 
-  napi_value result;
-  status = napi_create_string_utf8(env, (const char *)stringResult, NAPI_AUTO_LENGTH, &result);
+  napi_value argv[1];
+  status = napi_create_string_utf8(env, (const char *)stringResult, NAPI_AUTO_LENGTH, argv);
   assert(status == napi_ok);
 
+  napi_value global;
+  status = napi_get_global(env, &global);
+  assert(status == napi_ok);
+
+  napi_value result;
+  status = napi_call_function(env, global, cb, 1, argv, &result);
+  assert(status == napi_ok);
+  
   xmlFreeDoc(inputXmlDocument);
   xmlFreeDoc(outputXmlDocument);
   xmlCleanupParser();
   xmlMemoryDump();
 
-  return result;
+  return nullptr;
 }
