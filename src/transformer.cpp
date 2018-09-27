@@ -37,6 +37,36 @@ Transformer::~Transformer() {
   xmlMemoryDump();
 }
 
+class LoadStylesheetAsync : public Napi::AsyncWorker {
+ public:
+  LoadStylesheetAsync(Napi::Function& callback, std::string stylesheetPath, xsltStylesheetPtr *stylesheetPtr)
+    : Napi::AsyncWorker(callback), stylesheetPath(stylesheetPath), stylesheetPtr(stylesheetPtr) {}
+  ~LoadStylesheetAsync() {}
+
+  void Execute () {
+    if (stylesheetPtr != nullptr) xsltFreeStylesheet(*stylesheetPtr);
+    *stylesheetPtr = xsltParseStylesheetFile((const xmlChar *)stylesheetPath.c_str());
+    if (*stylesheetPtr == nullptr) {
+      std::string message = "failed to parse " + (std::string)stylesheetPath;
+      return Napi::AsyncWorker::SetError(message);
+    }
+  }
+
+  void OnOK() {
+    Napi::HandleScope scope(Env());
+    Callback().Call({});
+  }
+
+   void OnError(const Napi::Error& error) {
+    Napi::HandleScope scope(Env());
+    Callback().Call({error.Value()});
+  }
+
+ private:
+  std::string stylesheetPath;
+  xsltStylesheetPtr *stylesheetPtr;
+};
+
 Napi::Value Transformer::loadStylesheet(const Napi::CallbackInfo &info) {
   Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
@@ -47,10 +77,16 @@ Napi::Value Transformer::loadStylesheet(const Napi::CallbackInfo &info) {
     Napi::TypeError::New(env, "String expected").ThrowAsJavaScriptException();
   }
 
+  if (length <= 0 || !info[1].IsFunction()) {
+    Napi::TypeError::New(env, "callback function expected").ThrowAsJavaScriptException();
+  }
+
   Napi::String value = info[0].As<Napi::String>();
   std::string stylesheetPath = value.Utf8Value();
-  if (stylesheetPtr != nullptr) xsltFreeStylesheet(stylesheetPtr);
-  stylesheetPtr = xsltParseStylesheetFile((const xmlChar *)stylesheetPath.c_str());
+  Napi::Function callback = info[1].As<Napi::Function>();
+
+  LoadStylesheetAsync *loadStylesheetAsync = new LoadStylesheetAsync(callback, stylesheetPath, &stylesheetPtr);
+  loadStylesheetAsync->Queue();
   return info.Env().Undefined();
 }
 
