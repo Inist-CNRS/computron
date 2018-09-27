@@ -13,7 +13,7 @@ Napi::FunctionReference Transformer::constructor;
 Napi::Object Transformer::Init(Napi::Env env, Napi::Object exports) {
   Napi::HandleScope scope(env);
 
-  Napi::Function func = DefineClass(env, "MyObject",
+  Napi::Function func = DefineClass(env, "Transformer",
                                     {InstanceMethod("loadStylesheet", &Transformer::loadStylesheet),
                                      InstanceMethod("apply", &Transformer::apply)});
 
@@ -63,16 +63,23 @@ public:
   ~ApplyAsync() {}
 
   void Execute() {
+    if (stylesheetPtr == nullptr) {
+      return Napi::AsyncWorker::SetError("no stylesheet loaded");
+    }
+
     xmlDocPtr inputXmlDocument = xmlReadFile(xmlDocumentPath.c_str(), NULL, 0);
     if (inputXmlDocument == NULL) {
       std::string message = "failed to parse " + (std::string)xmlDocumentPath;
-      Napi::TypeError::New(Env(), message).ThrowAsJavaScriptException();
+      return Napi::AsyncWorker::SetError(message);
     }
 
     xmlDocPtr outputXmlDocument = xsltApplyStylesheet(stylesheetPtr, inputXmlDocument, params);
     if (outputXmlDocument == NULL) {
+      xmlFreeDoc(inputXmlDocument);
+      xmlCleanupParser();
+      xmlMemoryDump();
       std::string message = "failed to transform " + (std::string)xmlDocumentPath;
-      Napi::TypeError::New(Env(), message).ThrowAsJavaScriptException();
+      return Napi::AsyncWorker::SetError(message);
     }
 
     xmlChar *stringResult;
