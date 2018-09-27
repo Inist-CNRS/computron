@@ -1,5 +1,4 @@
 #include "transformer.h"
-#include <assert.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <libxslt/transform.h>
@@ -7,6 +6,11 @@
 #include <libxslt/xsltInternals.h>
 #include <libxslt/xsltutils.h>
 #include <string>
+
+// Disable warning and error parsing
+void xslt_generic_error_handler(void *ctx, const char *msg, ...) {
+  // Do nothing but do it well
+}
 
 Napi::FunctionReference Transformer::constructor;
 
@@ -27,6 +31,7 @@ Napi::Object Transformer::Init(Napi::Env env, Napi::Object exports) {
 Transformer::Transformer(const Napi::CallbackInfo &info) : Napi::ObjectWrap<Transformer>(info) {
   xmlSubstituteEntitiesDefault(1);
   xmlLoadExtDtdDefaultValue = 1;
+  xsltSetGenericErrorFunc(nullptr, xslt_generic_error_handler);
   stylesheetPtr = nullptr;
 }
 
@@ -38,12 +43,12 @@ Transformer::~Transformer() {
 }
 
 class LoadStylesheetAsync : public Napi::AsyncWorker {
- public:
-  LoadStylesheetAsync(Napi::Function& callback, std::string stylesheetPath, xsltStylesheetPtr *stylesheetPtr)
-    : Napi::AsyncWorker(callback), stylesheetPath(stylesheetPath), stylesheetPtr(stylesheetPtr) {}
+public:
+  LoadStylesheetAsync(Napi::Function &callback, std::string stylesheetPath, xsltStylesheetPtr *stylesheetPtr)
+      : Napi::AsyncWorker(callback), stylesheetPath(stylesheetPath), stylesheetPtr(stylesheetPtr) {}
   ~LoadStylesheetAsync() {}
 
-  void Execute () {
+  void Execute() {
     if (stylesheetPtr != nullptr) xsltFreeStylesheet(*stylesheetPtr);
     *stylesheetPtr = xsltParseStylesheetFile((const xmlChar *)stylesheetPath.c_str());
     if (*stylesheetPtr == nullptr) {
@@ -57,12 +62,12 @@ class LoadStylesheetAsync : public Napi::AsyncWorker {
     Callback().Call({});
   }
 
-   void OnError(const Napi::Error& error) {
+  void OnError(const Napi::Error &error) {
     Napi::HandleScope scope(Env());
     Callback().Call({error.Value()});
   }
 
- private:
+private:
   std::string stylesheetPath;
   xsltStylesheetPtr *stylesheetPtr;
 };
@@ -85,7 +90,8 @@ Napi::Value Transformer::loadStylesheet(const Napi::CallbackInfo &info) {
   std::string stylesheetPath = value.Utf8Value();
   Napi::Function callback = info[1].As<Napi::Function>();
 
-  LoadStylesheetAsync *loadStylesheetAsync = new LoadStylesheetAsync(callback, stylesheetPath, &stylesheetPtr);
+  LoadStylesheetAsync *loadStylesheetAsync =
+      new LoadStylesheetAsync(callback, stylesheetPath, &stylesheetPtr);
   loadStylesheetAsync->Queue();
   return info.Env().Undefined();
 }
@@ -103,7 +109,8 @@ public:
       return Napi::AsyncWorker::SetError("no stylesheet loaded");
     }
 
-    xmlDocPtr inputXmlDocument = xmlReadFile(xmlDocumentPath.c_str(), NULL, XML_PARSE_NOERROR | XML_PARSE_NOWARNING);
+    xmlDocPtr inputXmlDocument =
+        xmlReadFile(xmlDocumentPath.c_str(), NULL, XML_PARSE_NOERROR | XML_PARSE_NOWARNING);
     if (inputXmlDocument == NULL) {
       std::string message = "failed to parse " + (std::string)xmlDocumentPath;
       return Napi::AsyncWorker::SetError(message);
@@ -133,7 +140,7 @@ public:
     Callback().Call({Env().Undefined(), Napi::String::New(Env(), result)});
   }
 
-  void OnError(const Napi::Error& error) {
+  void OnError(const Napi::Error &error) {
     Napi::HandleScope scope(Env());
     Callback().Call({error.Value()});
   }
