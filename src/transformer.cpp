@@ -57,7 +57,7 @@ Napi::Value Transformer::loadStylesheet(const Napi::CallbackInfo &info) {
 class ApplyAsync : public Napi::AsyncWorker {
 public:
   ApplyAsync(Napi::Function &callback, std::string xmlDocumentPath, xsltStylesheetPtr stylesheetPtr,
-             const char *params[8])
+             const char **params)
       : Napi::AsyncWorker(callback), xmlDocumentPath(xmlDocumentPath), stylesheetPtr(stylesheetPtr),
         params(params) {}
   ~ApplyAsync() {}
