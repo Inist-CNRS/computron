@@ -67,7 +67,7 @@ public:
       return Napi::AsyncWorker::SetError("no stylesheet loaded");
     }
 
-    xmlDocPtr inputXmlDocument = xmlReadFile(xmlDocumentPath.c_str(), NULL, 0);
+    xmlDocPtr inputXmlDocument = xmlReadFile(xmlDocumentPath.c_str(), NULL, XML_PARSE_NOERROR | XML_PARSE_NOWARNING);
     if (inputXmlDocument == NULL) {
       std::string message = "failed to parse " + (std::string)xmlDocumentPath;
       return Napi::AsyncWorker::SetError(message);
@@ -95,6 +95,11 @@ public:
   void OnOK() {
     Napi::HandleScope scope(Env());
     Callback().Call({Env().Undefined(), Napi::String::New(Env(), result)});
+  }
+
+  void OnError(const Napi::Error& error) {
+    Napi::HandleScope scope(Env());
+    Callback().Call({error.Value()});
   }
 
 private:
