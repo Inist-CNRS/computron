@@ -13,10 +13,9 @@ Napi::FunctionReference Transformer::constructor;
 Napi::Object Transformer::Init(Napi::Env env, Napi::Object exports) {
   Napi::HandleScope scope(env);
 
-  Napi::Function func = DefineClass(
-      env, "MyObject",
-      {InstanceMethod("loadStylesheet", &Transformer::loadStylesheet),
-       InstanceMethod("apply", &Transformer::apply)});
+  Napi::Function func = DefineClass(env, "MyObject",
+                                    {InstanceMethod("loadStylesheet", &Transformer::loadStylesheet),
+                                     InstanceMethod("apply", &Transformer::apply)});
 
   constructor = Napi::Persistent(func);
   constructor.SuppressDestruct();
@@ -25,16 +24,14 @@ Napi::Object Transformer::Init(Napi::Env env, Napi::Object exports) {
   return exports;
 }
 
-Transformer::Transformer(const Napi::CallbackInfo &info)
-    : Napi::ObjectWrap<Transformer>(info) {
+Transformer::Transformer(const Napi::CallbackInfo &info) : Napi::ObjectWrap<Transformer>(info) {
   xmlSubstituteEntitiesDefault(1);
   xmlLoadExtDtdDefaultValue = 1;
   stylesheetPtr = nullptr;
 }
 
 Transformer::~Transformer() {
-  if (stylesheetPtr)
-    xsltFreeStylesheet(stylesheetPtr);
+  if (stylesheetPtr) xsltFreeStylesheet(stylesheetPtr);
   xsltCleanupGlobals();
   xmlCleanupParser();
   xmlMemoryDump();
@@ -52,17 +49,17 @@ Napi::Value Transformer::loadStylesheet(const Napi::CallbackInfo &info) {
 
   Napi::String value = info[0].As<Napi::String>();
   std::string stylesheetPath = value.Utf8Value();
-  if (stylesheetPtr != nullptr)
-    xsltFreeStylesheet(stylesheetPtr);
-  stylesheetPtr =
-      xsltParseStylesheetFile((const xmlChar *)stylesheetPath.c_str());
+  if (stylesheetPtr != nullptr) xsltFreeStylesheet(stylesheetPtr);
+  stylesheetPtr = xsltParseStylesheetFile((const xmlChar *)stylesheetPath.c_str());
   return info.Env().Undefined();
 }
 
 class ApplyAsync : public Napi::AsyncWorker {
 public:
-  ApplyAsync(Napi::Function &callback, std::string xmlDocumentPath, xsltStylesheetPtr stylesheetPtr, const char *params[8])
-      : Napi::AsyncWorker(callback), xmlDocumentPath(xmlDocumentPath), stylesheetPtr(stylesheetPtr), params(params) {}
+  ApplyAsync(Napi::Function &callback, std::string xmlDocumentPath, xsltStylesheetPtr stylesheetPtr,
+             const char *params[8])
+      : Napi::AsyncWorker(callback), xmlDocumentPath(xmlDocumentPath), stylesheetPtr(stylesheetPtr),
+        params(params) {}
   ~ApplyAsync() {}
 
   void Execute() {
@@ -72,11 +69,9 @@ public:
       Napi::TypeError::New(Env(), message).ThrowAsJavaScriptException();
     }
 
-    xmlDocPtr outputXmlDocument =
-        xsltApplyStylesheet(stylesheetPtr, inputXmlDocument, params);
+    xmlDocPtr outputXmlDocument = xsltApplyStylesheet(stylesheetPtr, inputXmlDocument, params);
     if (outputXmlDocument == NULL) {
-      std::string message =
-          "failed to transform " + (std::string)xmlDocumentPath;
+      std::string message = "failed to transform " + (std::string)xmlDocumentPath;
       Napi::TypeError::New(Env(), message).ThrowAsJavaScriptException();
     }
 
@@ -113,8 +108,7 @@ Napi::Value Transformer::apply(const Napi::CallbackInfo &info) {
   }
 
   if (length <= 0 || !info[1].IsFunction()) {
-    Napi::TypeError::New(env, "callback function expected")
-        .ThrowAsJavaScriptException();
+    Napi::TypeError::New(env, "callback function expected").ThrowAsJavaScriptException();
   }
 
   Napi::String value = info[0].As<Napi::String>();
