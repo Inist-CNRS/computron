@@ -6,6 +6,8 @@ project(addon)
 find_package(LibXml2 REQUIRED)
 find_package(LibXslt REQUIRED)
 
+include_directories(${CMAKE_JS_INC})
+
 # Build a shared library named after the project from the files in `src/`
 file(GLOB SOURCE_FILES "src/*.cpp" "src/*.h")
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
@@ -14,7 +16,7 @@ add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".node")
 
 # Include N-API wrappers
-target_include_directories(${PROJECT_NAME} PRIVATE "/usr/include/node")
+target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB})
 target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/node_modules/node-addon-api")
 
 # Include Libxml2 and Libxslt
