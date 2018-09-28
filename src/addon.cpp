@@ -1,4 +1,3 @@
-#include <napi.h>
 #include "transformer.h"
 
 Napi::Object InitAll(Napi::Env env, Napi::Object exports) {
