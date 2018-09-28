@@ -3,8 +3,7 @@ compiler:
   - g++
 dist: trusty
 env:
-  matrix:
-    - NODE_VERSION="10"
+  - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7 NODE_VERSION=10"
 addons:
   apt:
     sources:
