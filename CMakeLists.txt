@@ -10,7 +10,7 @@ include_directories(${CMAKE_JS_INC})
 
 # Build a shared library named after the project from the files in `src/`
 file(GLOB SOURCE_FILES "src/*.cpp" "src/*.h")
-add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} "${CMAKE_SOURCE_DIR}/node_modules/node-addon-api/napi.h")
+add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} /node_modules/node-addon-api/napi.h)
 
 # Gives our library file a .node extension without any "lib" prefix
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".node")

@@ -9,7 +9,7 @@
     "node-addon-api": "^1.4.0"
   },
   "scripts": {
-    "postinstall": "cmake-js compile",
+    "install": "cmake-js compile",
     "test": "mocha"
   },
   "author": "remy.meja@inist.fr",
