@@ -9,6 +9,7 @@
     "node-addon-api": "^1.4.0"
   },
   "scripts": {
+    "install": "cmake-js compile --CDNODE_ADDON_API_INC=$(node -p \"require('node-addon-api').include\" | sed -e 's/^\"//' -e 's/\"$//')",
     "test": "mocha"
   },
   "author": "remy.meja@inist.fr",
