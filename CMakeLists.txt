@@ -19,10 +19,10 @@ set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".node")
 
 # Include N-API wrappers
 target_include_directories(${PROJECT_NAME} 
-  PRIVATE ${CMAKE_JS_INC} 
   PRIVATE "${CMAKE_SOURCE_DIR}/node_modules/node-addon-api"
+  PRIVATE ${CMAKE_JS_INC} 
 )
-target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${CMAKE_JS_LIB})
 
 # Include Libxml2 and Libxslt
 target_include_directories(${PROJECT_NAME} PRIVATE ${LIBXML2_INCLUDE_DIR} ${LIBXSLT_INCLUDE_DIR})
