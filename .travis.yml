@@ -1,0 +1,22 @@
+language: c++
+compiler:
+  - gcc
+dist: trusty
+env:
+  matrix:
+    - NODE_VERSION="10"
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.9
+      - cmake
+      - libxml2-dev
+      - libxslt1-dev
+before_install:
+  - git clone --depth 1 https://github.com/creationix/nvm.git ~/.nvm
+  - source ~/.nvm/nvm.sh
+  - nvm install $NODE_VERSION
+  - nvm use $NODE_VERSION
+  - npm i
