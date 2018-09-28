@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/Inist-CNRS/computron.svg?branch=master)](https://travis-ci.org/Inist-CNRS/computron)
+
 # Computron
 
 :warning: Still working in progress :warning:
