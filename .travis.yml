@@ -15,6 +15,7 @@ addons:
       - libxml2-dev
       - libxslt1-dev
 before_install:
+  - eval "${MATRIX_EVAL}"
   - curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
   - source ~/.bashrc
   - nvm install $NODE_VERSION
