@@ -1,6 +1,6 @@
 language: c++
 compiler:
-  - gcc
+  - g++
 dist: trusty
 env:
   matrix:
