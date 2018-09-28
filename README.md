@@ -2,7 +2,7 @@
 
 :warning: Still working in progress :warning:
 
-Computron is a NodeJS library for applying XSLT stylesheets to XML documents. It's also an [C++ addon for nodejs](https://nodejs.org/api/n-api.html) which means it use pure C++ code whith the help of libxslt library.
+Computron is a Node.js library for applying XSLT stylesheets to XML documents. It's also an [C++ addon for nodejs](https://nodejs.org/api/n-api.html) which means it use pure C++ code whith the help of libxslt library.
 
 ## Requirements
 This version has been tested in Ubuntu 18.04 with NodeJS v10.
