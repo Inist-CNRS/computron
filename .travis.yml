@@ -10,13 +10,14 @@ addons:
     sources:
       - ubuntu-toolchain-r-test
     packages:
-      - g++-4.9
+      - curl
+      - g++-7
       - cmake
       - libxml2-dev
       - libxslt1-dev
 before_install:
-  - git clone --depth 1 https://github.com/creationix/nvm.git ~/.nvm
-  - source ~/.nvm/nvm.sh
+  - curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
+  - source ~/.bashrc
   - nvm install $NODE_VERSION
   - nvm use $NODE_VERSION
 
