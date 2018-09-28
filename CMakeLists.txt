@@ -10,7 +10,7 @@ set($ENV{NODE_ADDON_API_INC} NODE_ADDON_API_INC)
 include_directories(${CMAKE_JS_INC})
 
 file(GLOB SOURCE_FILES "src/*.cpp" "src/*.h")
-add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} "${NODE_ADDON_API_INC}/napi.h")
+add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".node")
 
