@@ -20,7 +20,8 @@ npm install computron
 
 ## Usage 
 ```js
-const transformer = new Transformer();
+const Computron = require('computron');
+const transformer = new Computron();
 
 transformer.loadStylesheet('path/to/my/file.xsl', error => {
   if (error) return console.log('dammit');
@@ -29,5 +30,21 @@ transformer.loadStylesheet('path/to/my/file.xsl', error => {
     if (error) return console.log('bloody hell');
     // do something with the result
   });
+});
+```
+
+Promises with the help of [bluebird package](https://www.npmjs.com/package/bluebird)
+```js
+const Promise = require('bluebird');
+const Computron = require('computron');
+Promise.promisifyAll(Computron.prototype);
+const transformer = new Computron();
+
+transformer.loadStylesheetAsync('path/to/my/file.xsl')
+  .then(() => transformer.applyAsync('path/to/my/file.xml'))
+  .then(result => {
+    // do something with the result
+  })
+  .catch(console.error)
 });
 ```
