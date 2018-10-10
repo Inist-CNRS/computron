@@ -5,6 +5,8 @@ const pkg = require('../package.json');
 const Transformer = require('../addon.js');
 const expect = require('chai').expect;
 const path = require('path');
+const xpath = require('xpath');
+const { DOMParser } = require('xmldom');
 
 describe(pkg.name + '/addon.js', function () {
   describe('loadStylesheet', function () {
@@ -54,6 +56,28 @@ describe(pkg.name + '/addon.js', function () {
         transformer.apply(xmlDocument, (error, result) => {
           if (error) return done(error);
           expect(result).to.be.a('string');
+          done();
+        });
+      });
+    });
+
+    it('should apply stylesheet whith param for xml file', function (done) {
+      const transformer = new Transformer();
+      expect(transformer).to.be.an('Transformer');
+      const stylesheetPath = path.join(__dirname, 'data/stylesheet.xsl');
+      const xmlDocument = path.join(__dirname, 'data/example.xml');
+      const param = {
+        givenName: 'Bob',
+        familyName: 'Gedolf'
+      };
+      transformer.loadStylesheet(stylesheetPath, error => {
+        if (error) return done(error);
+        transformer.apply(xmlDocument, param, (error, result) => {
+          if (error) return done(error);
+          expect(result).to.be.a('string');
+          const doc = new DOMParser().parseFromString(result);
+          const nodes = xpath.select('/html/body/h2', doc);
+          expect(nodes.toString()).to.equal('<h2>My CD Collection by BobGedolf</h2>');
           done();
         });
       });
