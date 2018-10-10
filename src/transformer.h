@@ -17,7 +17,6 @@ private:
   Napi::Value apply(const Napi::CallbackInfo& info);
   
   xsltStylesheetPtr stylesheetPtr;
-  const char *params[8] = {""};
 };
 
 
