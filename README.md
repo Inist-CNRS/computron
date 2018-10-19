@@ -48,3 +48,25 @@ transformer.loadStylesheetAsync('path/to/my/file.xsl')
   .catch(console.error)
 });
 ```
+
+## API
+
+**Computron.loadStylesheet(string, callback)**
+```js
+Computron.loadStylesheet('path/to/my/file.xsl', error => {
+  // ...
+});
+```
+
+**Computron.apply(string, [obj], callback)**
+```js
+// With params
+Computron.apply('path/to/my/file.xml', { name: 'John DOE' }, (error, result) => {
+  // ...
+});
+
+// Without params
+Computron.apply('path/to/my/file.xml', (error, result) => {
+  // ...
+});
+```
