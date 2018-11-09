@@ -1,3 +1,4 @@
+[![npm version](https://badge.fury.io/js/computron.svg)](https://badge.fury.io/js/computron)
 [![Build Status](https://travis-ci.org/Inist-CNRS/computron.svg?branch=master)](https://travis-ci.org/Inist-CNRS/computron)
 
 # Computron
