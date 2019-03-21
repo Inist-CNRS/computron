@@ -8,6 +8,7 @@
 #include <libxslt/xslt.h>
 #include <libxslt/xsltInternals.h>
 #include <libxslt/xsltutils.h>
+#include <libexslt/exslt.h>
 #include <string>
 #include <vector>
 
@@ -35,6 +36,7 @@ Napi::Object Transformer::Init(Napi::Env env, Napi::Object exports) {
 }
 
 Transformer::Transformer(const Napi::CallbackInfo &info) : Napi::ObjectWrap<Transformer>(info) {
+  exsltRegisterAll();
   xmlSubstituteEntitiesDefault(1);
   xmlLoadExtDtdDefaultValue = 1;
   xsltSetGenericErrorFunc(nullptr, xslt_generic_error_handler);
