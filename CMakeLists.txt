@@ -21,6 +21,7 @@ target_include_directories(${PROJECT_NAME}
 )
 target_link_libraries(${PROJECT_NAME} 
   PRIVATE ${CMAKE_JS_LIB}
-  ${LIBXML2_LIBRARIES} 
+  ${LIBXML2_LIBRARIES}
   ${LIBXSLT_LIBRARIES}
+  ${LIBXSLT_EXSLT_LIBRARIES}
 )
