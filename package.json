@@ -5,8 +5,8 @@
   "main": "addon.js",
   "dependencies": {
     "bindings": "^1.5.0",
-    "cmake-js": "^5.1.0",
-    "node-addon-api": "^1.6.2"
+    "cmake-js": "^5.2.0",
+    "node-addon-api": "^1.6.3"
   },
   "scripts": {
     "install": "cmake-js compile --CDNODE_ADDON_API_INC=$(node -p \"require('node-addon-api').include\" | sed -e 's/^\"//' -e 's/\"$//')",
@@ -22,7 +22,7 @@
   "license": "MIT",
   "devDependencies": {
     "chai": "^4.2.0",
-    "mocha": "^6.0.2",
+    "mocha": "^6.1.4",
     "xmldom": "^0.1.27",
     "xpath": "0.0.27"
   }
