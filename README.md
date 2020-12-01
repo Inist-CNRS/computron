@@ -3,8 +3,6 @@
 
 # Computron
 
-:warning: Work in progress :warning:
-
 Computron is a Node.js library for applying XSLT stylesheets to XML documents. It's also a [C++ addon for nodejs](https://nodejs.org/api/n-api.html) which means it uses pure C++ code whith the help of libxslt library.
 
 ## Requirements
