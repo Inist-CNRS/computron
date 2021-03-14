@@ -21,8 +21,8 @@
   "author": "remy.meja@inist.fr",
   "license": "MIT",
   "devDependencies": {
-    "chai": "^4.2.0",
-    "mocha": "^8.2.1",
+    "chai": "^4.3.4",
+    "mocha": "^8.3.2",
     "xmldom": "^0.4.0",
     "xpath": "0.0.32"
   }
