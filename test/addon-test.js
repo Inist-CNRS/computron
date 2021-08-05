@@ -12,7 +12,7 @@ describe(pkg.name + '/addon.js', function () {
   describe('loadStylesheet', function () {
     it('should load stylesheet', function (done) {
       const transformer = new Transformer();
-      expect(transformer).to.be.an('Transformer');
+      expect(transformer).to.be.an.instanceof(Transformer);
       const stylesheetPath = path.join(__dirname, 'data/stylesheet.xsl');
       transformer.loadStylesheet(stylesheetPath, error => {
         if (error) return done(error);
@@ -22,7 +22,7 @@ describe(pkg.name + '/addon.js', function () {
 
     it('should reload another stylesheet', function (done) {
       const transformer = new Transformer();
-      expect(transformer).to.be.an('Transformer');
+      expect(transformer).to.be.an.instanceof(Transformer);
       const stylesheetPath = path.join(__dirname, 'data/stylesheet.xsl');
       const anotherStylesheetPath = path.join(__dirname, 'data/another-stylesheet.xsl');
       transformer.loadStylesheet(stylesheetPath, error => {
@@ -36,7 +36,7 @@ describe(pkg.name + '/addon.js', function () {
 
     it('should fail to load stylesheet', function (done) {
       const transformer = new Transformer();
-      expect(transformer).to.be.an('Transformer');
+      expect(transformer).to.be.an.instanceof(Transformer);
       const stylesheetPath = path.join(__dirname, 'data/nope.xsl');
       transformer.loadStylesheet(stylesheetPath, error => {
         expect(error).to.be.an('error');
@@ -48,7 +48,7 @@ describe(pkg.name + '/addon.js', function () {
   describe('apply', function () {
     it('should apply stylesheet for xml file', function (done) {
       const transformer = new Transformer();
-      expect(transformer).to.be.an('Transformer');
+      expect(transformer).to.be.an.instanceof(Transformer);
       const stylesheetPath = path.join(__dirname, 'data/stylesheet.xsl');
       const xmlDocument = path.join(__dirname, 'data/example.xml');
       transformer.loadStylesheet(stylesheetPath, error => {
@@ -63,7 +63,7 @@ describe(pkg.name + '/addon.js', function () {
 
     it('should apply stylesheet whith param for xml file', function (done) {
       const transformer = new Transformer();
-      expect(transformer).to.be.an('Transformer');
+      expect(transformer).to.be.an.instanceof(Transformer);
       const stylesheetPath = path.join(__dirname, 'data/stylesheet.xsl');
       const xmlDocument = path.join(__dirname, 'data/example.xml');
       const param = {
@@ -85,7 +85,7 @@ describe(pkg.name + '/addon.js', function () {
 
     it('should fail to apply stylesheet', function (done) {
       const transformer = new Transformer();
-      expect(transformer).to.be.an('Transformer');
+      expect(transformer).to.be.an.instanceof(Transformer);
       const stylesheetPath = path.join(__dirname, 'data/stylesheet.xsl');
       const xmlDocument = path.join(__dirname, 'data/nope.xml');
       transformer.loadStylesheet(stylesheetPath, error => {
