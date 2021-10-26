@@ -11,6 +11,7 @@
 #include <libexslt/exslt.h>
 #include <string>
 #include <vector>
+#include <malloc.h>
 
 using namespace std;
 
@@ -48,6 +49,7 @@ Transformer::~Transformer() {
   xsltCleanupGlobals();
   xmlCleanupParser();
   xmlMemoryDump();
+  malloc_trim(0);
 }
 
 class LoadStylesheetAsync : public Napi::AsyncWorker {
@@ -128,6 +130,7 @@ public:
       xmlFreeDoc(inputXmlDocument);
       xmlCleanupParser();
       xmlMemoryDump();
+      malloc_trim(0);
       string message = "failed to transform " + (string)xmlDocumentPath;
       return Napi::AsyncWorker::SetError(message);
     }
@@ -140,6 +143,7 @@ public:
     xmlFreeDoc(outputXmlDocument);
     xmlCleanupParser();
     xmlMemoryDump();
+    malloc_trim(0);
   }
 
   void OnOK() {
