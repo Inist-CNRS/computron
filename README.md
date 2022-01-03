@@ -1,71 +1,28 @@
-[![npm version](https://badge.fury.io/js/computron.svg)](https://badge.fury.io/js/computron)
-[![Build Status](https://travis-ci.org/Inist-CNRS/computron.svg?branch=master)](https://travis-ci.org/Inist-CNRS/computron)
-
 # Computron
+Computron is a Node.js library to apply XSLT stylesheets to XML documents. It's a [C++ addon for Node.js](https://nodejs.org/api/addons.html) that uses [libxml2](http://www.xmlsoft.org/).
 
-Computron is a Node.js library for applying XSLT stylesheets to XML documents. It's also a [C++ addon for nodejs](https://nodejs.org/api/n-api.html) which means it uses pure C++ code whith the help of libxslt library.
+## Disclaimer
+**This library is only intended to be used on Linux.**
 
 ## Requirements
-This version has been tested in Ubuntu 18.04 with NodeJS v10.
-
+You must have libxml2 installed on your system.
 ```bash
-sudo apt install cmake g++ libxml2-dev libxslt1-dev
+sudo apt install libxml2-dev libxslt1-dev
 ```
 
-## Install
+You should already have a C++ compiler installed on your system, if it's not the case install g++.
 ```bash
-npm install computron
+sudo apt install g++
 ```
 
-## Usage 
-```js
-const Computron = require('computron');
-const transformer = new Computron();
-
-transformer.loadStylesheet('path/to/my/file.xsl', error => {
-  if (error) return console.log('dammit');
-  
-  transformer.apply('path/to/my/file.xml', (error, result) => {
-    if (error) return console.log('bloody hell');
-    // do something with the result
-  });
-});
+## Development
+To build and run the tests in release mode run:
+```bash
+npm test
 ```
 
-Promises with the help of [bluebird package](https://www.npmjs.com/package/bluebird)
-```js
-const Promise = require('bluebird');
-const Computron = require('computron');
-Promise.promisifyAll(Computron.prototype);
-const transformer = new Computron();
-
-transformer.loadStylesheetAsync('path/to/my/file.xsl')
-  .then(() => transformer.applyAsync('path/to/my/file.xml'))
-  .then(result => {
-    // do something with the result
-  })
-  .catch(console.error)
-});
+You can debug the C++ code with in VSCode, to do so run:
+```bash
+npm run build:config
 ```
-
-## API
-
-**Computron.loadStylesheet(string, callback)**
-```js
-Computron.loadStylesheet('path/to/my/file.xsl', error => {
-  // ...
-});
-```
-
-**Computron.apply(string, [obj], callback)**
-```js
-// With params
-Computron.apply('path/to/my/file.xml', { name: 'John DOE' }, (error, result) => {
-  // ...
-});
-
-// Without params
-Computron.apply('path/to/my/file.xml', (error, result) => {
-  // ...
-});
-```
+to build the VSCode debugger configuration then simply press `F5` (Or go to the "Run and Debug" tab and click on "Debug").

@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="exemple.xsl"?>
+<Article>
+  <Title>My article</Title>
+  <Authors>
+    <Author>Mr Foo</Author>
+    <Author>Mr Bar</Author>
+  </Authors>
+  <!-- The Body tag is never closed, this is the error -->
+  <Body>This is my article.
+</Article>
