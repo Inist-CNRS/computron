@@ -1,11 +1,11 @@
 # Computron
-Computron is a Node.js library to apply XSLT stylesheets to XML documents. It's a [C++ addon for Node.js](https://nodejs.org/api/addons.html) that uses [libxml2](http://www.xmlsoft.org/).
+Computron is a Node.js library to apply XSLT stylesheets to XML documents. It's a [C++ addon for Node.js](https://nodejs.org/api/addons.html) that uses [libxml2](http://www.xmlsoft.org/) and [libxslt](http://xmlsoft.org/libxslt/).
 
 ## Disclaimer
 **This library is only intended to be used on Linux.**
 
 ## Requirements
-You must have libxml2 installed on your system.
+You must have libxml2 and libxslt1 installed on your system.
 ```bash
 sudo apt install libxml2-dev libxslt1-dev
 ```
