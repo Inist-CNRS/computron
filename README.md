@@ -15,6 +15,40 @@ You should already have a C++ compiler installed on your system, if it's not the
 sudo apt install g++
 ```
 
+## Usage
+Basic example:
+```JS
+const Computron = require('computron');
+const computron = new Computron();
+
+computron.loadStylesheet('/path/to/stylesheet', (_err) => {
+  if (_err) throw _err;
+
+  // null is passed as second argument because the stylesheet doesn't take any parameters
+  computron.apply('/path/to/xml', null, (err, result) => {
+    if (err) throw err;
+
+    console.log(result);
+  });
+});
+```
+
+Using a stylesheet that takes parameters:
+```JS
+const Computron = require('computron');
+const computron = new Computron();
+
+computron.loadStylesheet('/path/to/stylesheet-with-params', (_err) => {
+  if (_err) throw _err;
+
+  computron.apply('/path/to/xml', { param1Name: 'param1Value', param2Name: 'param2Value' }, (err, result) => {
+    if (err) throw err;
+
+    console.log(result);
+  });
+});
+```
+
 ## Development
 To build and run the tests in release mode run:
 ```bash
