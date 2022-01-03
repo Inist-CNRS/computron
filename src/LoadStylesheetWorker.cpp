@@ -27,9 +27,7 @@ void LoadStylesheetWorker::Execute()
 
 void LoadStylesheetWorker::OnOK()
 {
-    const Napi::Value undefined = Env().Undefined();
-
-    Callback().Call({ undefined, undefined });
+    Callback().Call({ Env().Undefined() });
 }
 
 void LoadStylesheetWorker::Cleanup()
