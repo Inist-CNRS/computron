@@ -1,0 +1,7 @@
+.vscode/
+node_modules/
+build/
+test/
+tools/
+.editorconfig
+.eslintrc.json
