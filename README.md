@@ -1,3 +1,5 @@
+[![Build and test status](https://github.com/Inist-CNRS/computron/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/Inist-CNRS/computron/actions/workflows/build-and-test.yml)
+
 # Computron
 Computron is a Node.js library to apply XSLT stylesheets to XML documents. It's a [C++ addon for Node.js](https://nodejs.org/api/addons.html) that uses [libxml2](http://www.xmlsoft.org/) and [libxslt](http://xmlsoft.org/libxslt/).
 
