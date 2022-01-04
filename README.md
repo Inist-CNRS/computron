@@ -1,4 +1,5 @@
 [![Build and test status](https://github.com/Inist-CNRS/computron/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/Inist-CNRS/computron/actions/workflows/build-and-test.yml)
+[![npm version](https://badge.fury.io/js/computron.svg)](https://badge.fury.io/js/computron)
 
 # Computron
 Computron is a Node.js library to apply XSLT stylesheets to XML documents. It's a [C++ addon for Node.js](https://nodejs.org/api/addons.html) that uses [libxml2](http://www.xmlsoft.org/) and [libxslt](http://xmlsoft.org/libxslt/).
@@ -15,6 +16,11 @@ sudo apt install libxml2-dev libxslt1-dev
 You should already have a C++ compiler installed on your system, if it's not the case install g++.
 ```bash
 sudo apt install g++
+```
+
+Computron uses [node-gyp](https://github.com/nodejs/node-gyp) as a build system so you need to install it to be able to compile Computron
+```bash
+npm install -g node-gyp
 ```
 
 ## Usage
