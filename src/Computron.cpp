@@ -40,7 +40,7 @@ Computron::~Computron()
 
     // Cleanup libxml and libxslt globals
     xsltCleanupGlobals();
-	xmlCleanupParser();
+    xmlCleanupParser();
 }
 
 Napi::Value Computron::LoadStylesheet(const Napi::CallbackInfo &info)

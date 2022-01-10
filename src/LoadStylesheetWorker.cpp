@@ -17,7 +17,7 @@ void LoadStylesheetWorker::Execute()
     }
 
     // Ok, let's parse the stylesheet now
-    m_StylesheetPtr = xsltParseStylesheetFile((const xmlChar *)m_StylesheetPath.c_str());
+    m_StylesheetPtr = xsltParseStylesheetFile(reinterpret_cast<const xmlChar *>(m_StylesheetPath.c_str()));
     if (!m_StylesheetPtr)
     {
         SetError(GetLastXmlError());

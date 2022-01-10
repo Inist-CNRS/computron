@@ -53,7 +53,7 @@ void ApplyWorker::Execute()
         for (const auto &param : m_Params)
             params.emplace_back(param.c_str());
 
-        params.emplace_back((const char *)NULL);
+        params.emplace_back(reinterpret_cast<const char *>(NULL));
 
         m_OutputXmlDocPtr = xsltApplyStylesheet(m_StylesheetPtr, m_InputXmlDocPtr, params.data());
     }
@@ -81,7 +81,7 @@ void ApplyWorker::Execute()
         return;
     }
 
-    m_Result = (const char *)result;
+    m_Result = reinterpret_cast<const char *>(result);
 }
 
 void ApplyWorker::OnOK()
