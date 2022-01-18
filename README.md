@@ -9,17 +9,17 @@ Computron is a Node.js library to apply XSLT stylesheets to XML documents. It's 
 
 ## Requirements
 You must have libxml2 and libxslt1 installed on your system.
-```bash
+```
 sudo apt install libxml2-dev libxslt1-dev
 ```
 
 You should already have a C++ compiler installed on your system, if it's not the case install g++.
-```bash
+```
 sudo apt install g++
 ```
 
 Computron uses [node-gyp](https://github.com/nodejs/node-gyp) as a build system so you need to install it to be able to compile Computron
-```bash
+```
 npm install -g node-gyp
 ```
 
@@ -59,12 +59,12 @@ computron.loadStylesheet('/path/to/stylesheet-with-params', (_err) => {
 
 ## Development
 To build and run the tests in release mode run:
-```bash
+```
 npm test
 ```
 
 You can debug the C++ code with in VSCode, to do so run:
-```bash
+```
 npm run build:config
 ```
-to build the VSCode debugger configuration then simply press `F5` (Or go to the "Run and Debug" tab and click on "Debug").
+This will build the VSCode debugger configuration, you can then simply press `F5` or go to the "Run and Debug" tab and click on "Debug".
