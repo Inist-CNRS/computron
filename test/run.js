@@ -71,7 +71,7 @@ function applyCorrectStylesheetToBadXml () {
 
 function applyStylesheetWithParams () {
   return new Promise((resolve, reject) => {
-    computron.loadStylesheet(path.join(datasetPath, 'correct-params.xsl'), (_err, _result) => {
+    computron.loadStylesheet(path.join(datasetPath, 'correct-params.xsl'), _err => {
       if (_err) reject(_err);
 
       computron.apply(path.join(datasetPath, 'correct.xml'), { givenName: 'Bob', familyName: 'Gedolf' }, (err, result) => {
@@ -79,6 +79,26 @@ function applyStylesheetWithParams () {
         assert.strictEqual(result.length > 0, true, 'applyStylesheetWithParams returned an empty result');
 
         err ? reject(err) : resolve(result);
+      });
+    });
+  });
+}
+
+// This test makes sure applying a stylesheet a second time can still work even after getting an error the first time
+function applyStylesheetAfterError () {
+  return new Promise((resolve, reject) => {
+    computron.loadStylesheet(path.join(datasetPath, 'correct.xsl'), __err => {
+      if (__err) reject(__err);
+
+      computron.apply(path.join(datasetPath, 'error.xml'), null, _err => {
+        assert.strictEqual(_err instanceof Error, true, 'Applying the stylesheet to the first XML document didn\'t return an error in applyStylesheetAfterError');
+
+        computron.apply(path.join(datasetPath, 'correct.xml'), null, (err, result) => {
+          assert.strictEqual(err, undefined, 'applyStylesheetAfterError returned an error');
+          assert.strictEqual(result.length > 0, true, 'applyStylesheetAfterError returned an empty result');
+
+          err ? reject(err) : resolve(result);
+        });
       });
     });
   });
@@ -92,6 +112,7 @@ function applyStylesheetWithParams () {
   await assert.doesNotReject(applyCorrectStylesheetToCorrectXml);
   await assert.rejects(applyCorrectStylesheetToBadXml);
   await assert.doesNotReject(applyStylesheetWithParams);
+  await assert.doesNotReject(applyStylesheetAfterError);
 
   console.info('\nTests passed - everything looks OK!');
 })();

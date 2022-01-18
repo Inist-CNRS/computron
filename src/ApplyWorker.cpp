@@ -91,12 +91,6 @@ void ApplyWorker::OnOK()
 
 void ApplyWorker::Cleanup()
 {
-    if (m_StylesheetPtr)
-    {
-        xsltFreeStylesheet(m_StylesheetPtr);
-        m_StylesheetPtr = nullptr;
-    }
-
     if (m_InputXmlDocPtr)
     {
         xmlFreeDoc(m_InputXmlDocPtr);
@@ -115,7 +109,7 @@ std::vector<std::string> ApplyWorker::BuildParams(const Napi::Object &paramsObj)
     std::vector<std::string> params;
     Napi::Array keys = paramsObj.GetPropertyNames();
 
-    // Preallocate enough memory for the params, each key as a value
+    // Preallocate enough memory for the params, each key has a value
     // so the vector will contain the number of keys * 2
     params.reserve(keys.Length() * 2);
 
