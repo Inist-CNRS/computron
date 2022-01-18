@@ -4,7 +4,7 @@
 #include <libxslt/transform.h>
 
 
-ApplyWorker::ApplyWorker(const Napi::Function &callback, const std::string &xmlDocPath, xsltStylesheetPtr &stylesheetPtr, const Napi::Value &params)
+ApplyWorker::ApplyWorker(const Napi::Function &callback, const std::string &xmlDocPath, xsltStylesheet *stylesheetPtr, const Napi::Value &params)
     : Worker(callback), m_XmlDocPath(xmlDocPath), m_StylesheetPtr(stylesheetPtr), m_InputXmlDocPtr(nullptr), m_OutputXmlDocPtr(nullptr)
 {
     // If parameters were passed, build them and save them in m_Params

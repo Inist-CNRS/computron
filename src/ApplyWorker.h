@@ -11,7 +11,7 @@
 class ApplyWorker : public Worker
 {
 public:
-    ApplyWorker(const Napi::Function &callback, const std::string &xmlDocPath, xsltStylesheetPtr &stylesheetPtr, const Napi::Value &params);
+    ApplyWorker(const Napi::Function &callback, const std::string &xmlDocPath, xsltStylesheet *stylesheetPtr, const Napi::Value &params);
 
     // The long task to execute.
     void Execute() override;
@@ -28,8 +28,8 @@ private:
     // Absolute path to the XML document.
     std::string m_XmlDocPath;
 
-    // Reference to a pointer to the stylesheet.
-    xsltStylesheetPtr &m_StylesheetPtr;
+    // Pointer to the stylesheet.
+    xsltStylesheet *m_StylesheetPtr;
 
     // Pointer to the XML input document.
     xmlDoc *m_InputXmlDocPtr;
