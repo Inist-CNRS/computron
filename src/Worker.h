@@ -20,4 +20,7 @@ protected:
     static std::string GetLastXmlError();
 private:
     virtual void Cleanup() = 0;
+
+    // Remove the leading and trailing whitespaces of a string.
+    static void Trim(std::string &string);
 };
