@@ -1,6 +1,6 @@
 {
   "name": "computron",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Computron is a Node.js library to apply XSLT stylesheets to XML documents.",
   "main": "lib/binding.js",
   "gypfile": true,
