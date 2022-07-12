@@ -8,111 +8,88 @@ const { Computron } = require(`../build/${process.env.DEBUG ? 'Debug' : 'Release
 assert(Computron, 'The expected class is undefined');
 
 const datasetPath = path.join(__dirname, 'dataset');
-const computron = new Computron();
+const computron = new Computron('default');
+
+function wrongTypeInPathWhenLoadingStylesheet () {
+  computron.loadStylesheet(3);
+}
 
 function loadCorrectStylesheet () {
-  return new Promise((resolve, reject) => {
-    computron.loadStylesheet(path.join(datasetPath, 'correct.xsl'), (err, result) => {
-      assert.strictEqual(err, undefined, 'loadCorrectStylesheet returned an error');
-      assert.strictEqual(result, undefined, 'loadCorrectStylesheet returned a result');
-
-      err ? reject(err) : resolve(result);
-    });
-  });
+  computron.loadStylesheet(path.join(datasetPath, 'correct.xsl'));
 }
 
 function loadBadStylesheet () {
-  return new Promise((resolve, reject) => {
-    computron.loadStylesheet(path.join(datasetPath, 'error.xsl'), (err, result) => {
-      assert.strictEqual(err instanceof Error, true, 'loadBadStylesheet didn\'t return an error');
-      assert.strictEqual(result, undefined, 'loadBadStylesheet returned a result');
-
-      err ? reject(err) : resolve(result);
-    });
-  });
+  computron.loadStylesheet(path.join(datasetPath, 'error.xsl'));
 }
 
 function loadInexistentStylesheet () {
-  return new Promise((resolve, reject) => {
-    computron.loadStylesheet(path.join(datasetPath, 'inexistent.xsl'), (err, result) => {
-      assert.strictEqual(err instanceof Error, true, 'loadInexistentStylesheet didn\'t return an error');
-      assert.strictEqual(result, undefined, 'loadInexistentStylesheet returned a result');
+  computron.loadStylesheet(path.join(datasetPath, 'inexistent.xsl'));
+}
 
-      err ? reject(err) : resolve(result);
-    });
-  });
+function wrongTypeInPathWhenApplying () {
+  computron.loadStylesheet(path.join(datasetPath, 'correct.xsl'));
+  computron.apply(3);
+}
+
+function applyWithoutLoading () {
+  const otherComputron = new Computron('custom');
+  otherComputron.apply(path.join(datasetPath, 'correct.xml'));
 }
 
 function applyCorrectStylesheetToCorrectXml () {
-  return new Promise((resolve, reject) => {
-    computron.loadStylesheet(path.join(datasetPath, 'correct.xsl'), () => {
-      computron.apply(path.join(datasetPath, 'correct.xml'), null, (err, result) => {
-        assert.strictEqual(err, undefined, 'applyCorrectStylesheetToCorrectXml returned an error');
-        assert.strictEqual(result.length > 0, true, 'applyCorrectStylesheetToCorrectXml returned an empty result');
+  computron.loadStylesheet(path.join(datasetPath, 'correct.xsl'));
+  const result = computron.apply(path.join(datasetPath, 'correct.xml'));
 
-        err ? reject(err) : resolve(result);
-      });
-    });
-  });
+  assert.strictEqual(result.length > 0, true, 'applyCorrectStylesheetToCorrectXml returned an empty result');
 }
 
 function applyCorrectStylesheetToBadXml () {
-  return new Promise((resolve, reject) => {
-    computron.loadStylesheet(path.join(datasetPath, 'correct.xsl'), () => {
-      computron.apply(path.join(datasetPath, 'error.xml'), null, (err, result) => {
-        assert.strictEqual(err instanceof Error, true, 'applyCorrectStylesheetToBadXml didn\'t return an error');
-        assert.strictEqual(result, undefined, 'applyCorrectStylesheetToBadXml returned a result');
-
-        err ? reject(err) : resolve(result);
-      });
-    });
-  });
+  computron.loadStylesheet(path.join(datasetPath, 'correct.xsl'));
+  computron.apply(path.join(datasetPath, 'error.xml'));
 }
 
 function applyStylesheetWithParams () {
-  return new Promise((resolve, reject) => {
-    computron.loadStylesheet(path.join(datasetPath, 'correct-params.xsl'), _err => {
-      if (_err) return reject(_err);
+  computron.loadStylesheet(path.join(datasetPath, 'correct-params.xsl'));
+  const result = computron.apply(path.join(datasetPath, 'correct.xml'), { givenName: 'Bob', familyName: 'Gedolf' });
 
-      computron.apply(path.join(datasetPath, 'correct.xml'), { givenName: 'Bob', familyName: 'Gedolf' }, (err, result) => {
-        assert.strictEqual(err, undefined, 'applyStylesheetWithParams returned an error');
-        assert.strictEqual(result.length > 0, true, 'applyStylesheetWithParams returned an empty result');
-
-        err ? reject(err) : resolve(result);
-      });
-    });
-  });
+  assert.strictEqual(result.length > 0, true, 'applyStylesheetWithParams returned an empty result');
 }
 
 // This test makes sure applying a stylesheet a second time can still work even after getting an error the first time
 function applyStylesheetAfterError () {
-  return new Promise((resolve, reject) => {
-    computron.loadStylesheet(path.join(datasetPath, 'correct.xsl'), __err => {
-      if (__err) return reject(__err);
+  computron.loadStylesheet(path.join(datasetPath, 'correct.xsl'));
 
-      computron.apply(path.join(datasetPath, 'error.xml'), null, _err => {
-        assert.strictEqual(_err instanceof Error, true, 'Applying the stylesheet to the first XML document didn\'t return an error in applyStylesheetAfterError');
+  try {
+    computron.apply(path.join(datasetPath, 'error.xml'));
+  } catch (err) {
+    assert.strictEqual(err instanceof Error, true, 'Applying the stylesheet to the first XML document didn\'t return an error in applyStylesheetAfterError');
+  }
 
-        computron.apply(path.join(datasetPath, 'correct.xml'), null, (err, result) => {
-          assert.strictEqual(err, undefined, 'applyStylesheetAfterError returned an error');
-          assert.strictEqual(result.length > 0, true, 'applyStylesheetAfterError returned an empty result');
+  const result = computron.apply(path.join(datasetPath, 'correct.xml'));
 
-          err ? reject(err) : resolve(result);
-        });
-      });
-    });
-  });
+  assert.strictEqual(result.length > 0, true, 'applyStylesheetAfterError returned an empty result');
 }
 
-(async function () {
-  await assert.doesNotReject(loadCorrectStylesheet);
-  await assert.rejects(loadBadStylesheet);
-  await assert.rejects(loadInexistentStylesheet);
+function applySameStylesheetWithDifferentParams () {
+  computron.loadStylesheet(path.join(datasetPath, 'correct-params.xsl'));
+  const xmlWithoutParams = computron.apply(path.join(datasetPath, 'correct.xml'));
+  const xmlWithParams = computron.apply(path.join(datasetPath, 'correct.xml'), { givenName: 'Bob', familyName: 'Gedolf' });
 
-  await assert.doesNotReject(applyCorrectStylesheetToCorrectXml);
-  await assert.rejects(applyCorrectStylesheetToBadXml);
-  await assert.doesNotReject(applyStylesheetWithParams);
-  await assert.doesNotReject(applyStylesheetAfterError);
+  assert.strictEqual(xmlWithoutParams.length > 0, true, 'Applying the stylesheet without params returned an empty result');
+  assert.strictEqual(xmlWithParams.length > 0, true, 'Applying the stylesheet with params returned an empty result');
+  assert.strictEqual(xmlWithoutParams !== xmlWithParams, true, 'Applying the stylesheet with and without params returned the same result');
+}
 
-  console.info('\nTests passed - everything looks OK!');
-})();
+assert.throws(wrongTypeInPathWhenLoadingStylesheet, { message: 'String expected as first argument' });
+assert.doesNotThrow(loadCorrectStylesheet);
+assert.throws(loadBadStylesheet);
+assert.throws(loadInexistentStylesheet);
+assert.throws(wrongTypeInPathWhenApplying, { message: 'String expected as first argument' });
+assert.throws(applyWithoutLoading, { message: 'You need to load a stylesheet first' });
+assert.doesNotThrow(applyCorrectStylesheetToCorrectXml);
+assert.throws(applyCorrectStylesheetToBadXml);
+assert.doesNotThrow(applyStylesheetWithParams);
+assert.doesNotThrow(applyStylesheetAfterError);
+assert.doesNotThrow(applySameStylesheetWithDifferentParams);
+
+console.info('\nTests passed - everything looks OK!');

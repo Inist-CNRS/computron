@@ -1,24 +1,13 @@
-#include "Worker.h"
+#include "Utils.h"
 
 #include <sstream>
-#include <libxml/xmlerror.h>
+#include <algorithm>
+#include <libxslt/xsltutils.h>
 
-
-Worker::Worker(const Napi::Function &callback)
-    : Napi::AsyncWorker(callback)
+namespace Utils
 {
-}
 
-Worker::~Worker()
-{
-}
-
-void Worker::OnError(const Napi::Error &error)
-{
-    Callback().Call({ error.Value() });
-}
-
-std::string Worker::GetLastXmlError()
+std::string GetLastXmlError()
 {
     std::string result;
 
@@ -43,22 +32,18 @@ std::string Worker::GetLastXmlError()
 
     result = stream.str();
 
-    Trim(result);
+    TrimString(result);
 
     return result;
 }
 
-void Worker::Trim(std::string &string)
+void TrimString(std::string &string)
 {
     // Trim the left side of the string by only keeping the characters that are not whitespaces
-    string.erase(string.begin(), std::find_if(string.begin(), string.end(), [](unsigned char ch)
-    {
-        return !std::isspace(ch);
-    }));
+    string.erase(string.begin(), std::find_if(string.begin(), string.end(), [](unsigned char ch) { return !std::isspace(ch); }));
 
     // Trim the right side of the string by only keeping the characters that are not whitespaces
-    string.erase(std::find_if(string.rbegin(), string.rend(), [](unsigned char ch)
-    {
-        return !std::isspace(ch);
-    }).base(), string.end());
+    string.erase(std::find_if(string.rbegin(), string.rend(), [](unsigned char ch) { return !std::isspace(ch); }).base(), string.end());
+}
+
 }

@@ -1,11 +1,12 @@
 #include "Computron.h"
 
-#include <string>
+#include "Utils.h"
+
 #include <libxslt/xsltutils.h>
 #include <libexslt/exslt.h>
+#include <libxslt/transform.h>
 
-#include "LoadStylesheetWorker.h"
-#include "ApplyWorker.h"
+#include <iostream>
 
 
 extern int xmlLoadExtDtdDefaultValue;
@@ -35,8 +36,9 @@ Computron::Computron(const Napi::CallbackInfo &info)
 
 Computron::~Computron()
 {
-    // Free the stylesheet and the XML documents
-    Cleanup();
+    // Free the stylesheet
+    if (m_StylesheetPtr)
+        xsltFreeStylesheet(m_StylesheetPtr);
 
     // Cleanup libxml and libxslt globals
     xsltCleanupGlobals();
@@ -46,64 +48,143 @@ Computron::~Computron()
 Napi::Value Computron::LoadStylesheet(const Napi::CallbackInfo &info)
 {
     Napi::Env env = info.Env();
+    Napi::Value undefined = env.Undefined();
 
     // Argument checks
-    if (info.Length() < 2)
-        Napi::Error::New(env, "You need to pass 2 arguments").ThrowAsJavaScriptException();
-
-    if (!info[0].IsString())
+    if (info.Length() < 1 || !info[0].IsString())
+    {
         Napi::TypeError::New(env, "String expected as first argument").ThrowAsJavaScriptException();
-
-    if (!info[1].IsFunction())
-        Napi::TypeError::New(env, "Callback expected as second argument").ThrowAsJavaScriptException();
+        return undefined;
+    }
 
     std::string stylesheetPath = info[0].As<Napi::String>().Utf8Value();
-    Napi::Function callback = info[1].As<Napi::Function>();
 
-    // This is not a memory leak, the async worker pointer is stored
-    // by Node-API and it's deleted later
-    LoadStylesheetWorker *loadStylesheetWorker = new LoadStylesheetWorker(callback, stylesheetPath, m_StylesheetPtr);
-    loadStylesheetWorker->Queue();
-
-    return env.Undefined();
-}
-
-Napi::Value Computron::Apply(const Napi::CallbackInfo &info)
-{
-    Napi::Env env = info.Env();
-
-    // Argument checks
-    if (info.Length() < 3)
-        Napi::Error::New(env, "You need to pass 3 arguments").ThrowAsJavaScriptException();
-
-    if (!info[0].IsString())
-        Napi::TypeError::New(env, "String expected as first argument").ThrowAsJavaScriptException();
-
-    if (!info[2].IsFunction())
-        Napi::TypeError::New(env, "Callback expected as third argument").ThrowAsJavaScriptException();
-
-    if (!m_StylesheetPtr)
-        Napi::Error::New(env, "You need to load a stylesheet first").ThrowAsJavaScriptException();
-
-    std::string xmlDocPath = info[0].As<Napi::String>().Utf8Value();
-    Napi::Value params = info[1];
-    Napi::Function callback = info[2].As<Napi::Function>();
-
-    // This is not a memory leak, the async worker pointer is stored
-    // by Node-API and it's deleted later
-    ApplyWorker *applyWorker = new ApplyWorker(callback, xmlDocPath, m_StylesheetPtr, params);
-    applyWorker->Queue();
-
-    return env.Undefined();
-}
-
-void Computron::Cleanup()
-{
+    // If a stylesheet has already been loaded with the current Computron
+    // instance, get rid of it first
     if (m_StylesheetPtr)
     {
         xsltFreeStylesheet(m_StylesheetPtr);
         m_StylesheetPtr = nullptr;
     }
+
+    // Ok, let's parse the stylesheet now
+    m_StylesheetPtr = xsltParseStylesheetFile(reinterpret_cast<const xmlChar *>(stylesheetPath.c_str()));
+    if (!m_StylesheetPtr)
+        Napi::Error::New(env, Utils::GetLastXmlError()).ThrowAsJavaScriptException();
+
+    return undefined;
+}
+
+Napi::Value Computron::Apply(const Napi::CallbackInfo &info)
+{
+    Napi::Env env = info.Env();
+    Napi::Value null = env.Null();
+
+    // Argument checks
+    if (info.Length() < 1 || !info[0].IsString())
+    {
+        Napi::TypeError::New(env, "String expected as first argument").ThrowAsJavaScriptException();
+        return null;
+    }
+
+    if (!m_StylesheetPtr)
+    {
+        Napi::Error::New(env, "You need to load a stylesheet first").ThrowAsJavaScriptException();
+        return null;
+    }
+
+    std::string xmlDocPath = info[0].As<Napi::String>().Utf8Value();
+    Napi::Value params = info[1];
+
+    // The errors and warnings are not completely ignored, they're just not
+    // printed to the standard output
+    xmlDoc *inputXmlDocPtr = xmlReadFile(xmlDocPath.c_str(), NULL, XML_PARSE_NOERROR | XML_PARSE_NOWARNING);
+    if (!inputXmlDocPtr)
+    {
+        Napi::Error::New(env, Utils::GetLastXmlError()).ThrowAsJavaScriptException();
+        return null;
+    }
+
+    xmlDoc *outputXmlDocPtr = nullptr;
+
+    // If parameters were passed, build them for libxml
+    if (params.IsObject())
+    {
+        std::vector<std::string> builtParams = BuildParams(params.As<Napi::Object>());
+
+        if (!builtParams.empty())
+        {
+            std::vector<const char *> paramsForLibxml;
+
+            // The vector of const char * needs to contain the amount of elements
+            // in the vector of strings + 1 because it needs to be NULL-terminated
+            paramsForLibxml.reserve(builtParams.size() + 1);
+
+            // Build the vector of const char * from the vector of strings
+            for (const auto &param : builtParams)
+                paramsForLibxml.emplace_back(param.c_str());
+
+            paramsForLibxml.emplace_back(static_cast<const char *>(NULL));
+
+            outputXmlDocPtr = xsltApplyStylesheet(m_StylesheetPtr, inputXmlDocPtr, paramsForLibxml.data());
+        }
+    }
+    else
+        outputXmlDocPtr = xsltApplyStylesheet(m_StylesheetPtr, inputXmlDocPtr, nullptr);
+
+    if (!outputXmlDocPtr)
+    {
+        Napi::Error::New(env, Utils::GetLastXmlError()).ThrowAsJavaScriptException();
+
+        xmlFreeDoc(inputXmlDocPtr);
+
+        return null;
+    }
+
+    // Save the result to a string for the JS environment
+    xmlChar *tranformResult = nullptr;
+    int transformResultLength = 0;
+
+    xsltSaveResultToString(&tranformResult, &transformResultLength, outputXmlDocPtr, m_StylesheetPtr);
+    if (!tranformResult || !transformResultLength)
+    {
+        Napi::Error::New(env, Utils::GetLastXmlError()).ThrowAsJavaScriptException();
+
+        xmlFreeDoc(inputXmlDocPtr);
+        xmlFreeDoc(outputXmlDocPtr);
+
+        return null;
+    }
+
+    std::string resultForJSEnvironment = reinterpret_cast<const char *>(tranformResult);
+
+    xmlFreeDoc(inputXmlDocPtr);
+    xmlFreeDoc(outputXmlDocPtr);
+
+    return Napi::String::New(env, resultForJSEnvironment);
+}
+
+std::vector<std::string> Computron::BuildParams(const Napi::Object &paramsObj)
+{
+    std::vector<std::string> params;
+    Napi::Array keys = paramsObj.GetPropertyNames();
+
+    // Preallocate enough memory for the params, each key has a value
+    // so the vector will contain the number of keys * 2
+    params.reserve(keys.Length() * 2);
+
+    // Build the vector of strings
+    for (uint32_t i = 0; i < keys.Length(); i++)
+    {
+        std::string key = keys.Get(i).As<Napi::String>().Utf8Value();
+        params.emplace_back(key);
+
+        // Apparently the values need to be between double-quotes, I don't know why...
+        std::string value = "\"" + paramsObj.Get(key).As<Napi::String>().Utf8Value() + "\"";
+        params.emplace_back(value);
+    }
+
+    return params;
 }
 
 Napi::Function Computron::GetClass(Napi::Env env)
