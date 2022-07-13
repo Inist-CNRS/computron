@@ -5,7 +5,7 @@
   "main": "lib/binding.js",
   "gypfile": true,
   "scripts": {
-    "build:config": "node tools/generateVSCodeConfig.js",
+    "build:config": "./tools/generateVSCodeConfig.mjs",
     "build:debug": "node-gyp configure && node-gyp build --debug",
     "build": "node-gyp configure && node-gyp build",
     "test": "npm run build && node test/run.js",
