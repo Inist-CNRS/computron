@@ -3,14 +3,13 @@
     "commonjs": true,
     "es2021": true
   },
-  "extends": "semistandard",
+  "extends": "standard",
+  "parserOptions": {
+    "ecmaVersion": "latest"
+  },
   "rules": {
-    "comma-dangle": ["error", {
-      "arrays": "always-multiline",
-      "objects": "always-multiline",
-      "imports": "never",
-      "exports": "never",
-      "functions": "never"
-    }]
+    "semi": ["error", "always"],
+    "no-extra-semi": "error",
+    "comma-dangle": ["error", "always-multiline"]
   }
 }

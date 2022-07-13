@@ -19,15 +19,14 @@
   },
   "author": "",
   "license": "CECILL-2.1",
-  "devDependencies": {
-    "eslint": "^7.32.0",
-    "eslint-config-semistandard": "^16.0.0",
-    "eslint-config-standard": "^16.0.3",
-    "eslint-plugin-import": "^2.25.3",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^5.2.0"
-  },
   "dependencies": {
     "node-addon-api": "^4.2.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.19.0",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-n": "^15.2.4",
+    "eslint-plugin-promise": "^6.0.0"
   }
 }
