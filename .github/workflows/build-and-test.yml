@@ -1,20 +1,19 @@
 name: Build and test
 on: [push, pull_request]
 jobs:
-  linux:
+  build-and-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Check out files
+        uses: actions/checkout@v2
+
       - name: Install system dependencies
-        run: |
-          sudo apt update
-          sudo apt install libxml2-dev libxslt1-dev
+        run: sudo apt update && sudo apt install libxml2-dev libxslt1-dev
+
       - name: Install Node
         uses: actions/setup-node@v2
         with:
-          node-version: '12.20.x'
+          node-version: '14'
+
       - name: Build and test
-        run: |
-          npm install -g node-gyp
-          npm install
-          npm test
+        run: npm install -g node-gyp && npm install && npm test
