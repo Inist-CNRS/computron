@@ -29,16 +29,24 @@ Basic example:
 const Computron = require('computron');
 const computron = new Computron();
 
-computron.loadStylesheet('/path/to/stylesheet', (_err) => {
-  if (_err) throw _err;
+// A stylesheet needs to be loaded on the current instance before doing anything
+try {
+  computron.loadStylesheet('/path/to/stylesheet');
+} catch (err) {
+  console.error(err);
+  process.exit(1);
+}
 
-  // null is passed as second argument because the stylesheet doesn't take any parameters
-  computron.apply('/path/to/xml', null, (err, result) => {
-    if (err) throw err;
+// Apply the previously loaded stylesheet on the provided XML file
+let xmlResult;
+try {
+  xmlResult = computron.apply('/path/to/xml');
+} catch (err) {
+  console.error(err);
+  process.exit(1);
+}
 
-    console.log(result);
-  });
-});
+console.info(xmlResult);
 ```
 
 Using a stylesheet that takes parameters:
@@ -46,15 +54,30 @@ Using a stylesheet that takes parameters:
 const Computron = require('computron');
 const computron = new Computron();
 
-computron.loadStylesheet('/path/to/stylesheet-with-params', (_err) => {
-  if (_err) throw _err;
+// A stylesheet needs to be loaded on the current instance before doing anything
+try {
+  computron.loadStylesheet('/path/to/stylesheet/with/params');
+} catch (err) {
+  console.error(err);
+  process.exit(1);
+}
 
-  computron.apply('/path/to/xml', { param1Name: 'param1Value', param2Name: 'param2Value' }, (err, result) => {
-    if (err) throw err;
+// Apply the previously loaded stylesheet on the provided XML file
+let xmlResult;
+try {
+  // Parameters can be passed to the stylesheet
+  const params = {
+    param1Name: 'value1',
+    param2Name: 'value2',
+  };
 
-    console.log(result);
-  });
-});
+  xmlResult = computron.apply('/path/to/xml', params);
+} catch (err) {
+  console.error(err);
+  process.exit(1);
+}
+
+console.info(xmlResult);
 ```
 
 ## Development
